@@ -6,8 +6,13 @@
 // Output: olen * batchSize * outputPlanes
 // Weight: kw * inputPlanes * outputPlanes
 
-#include "TemporalConvolutionTBC.cuh"
+#include <THCGeneral.h>
+#include "THCDeviceTensor.cuh"
+#include "THCDeviceTensorUtils.cuh"
+#include "THCDeviceUtils.cuh"
 #include "THCBlas.h"
+#include <algorithm>
+#include <cuda_runtime.h>
 
 namespace detail {
 
