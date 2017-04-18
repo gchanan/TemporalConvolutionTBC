@@ -16,12 +16,12 @@ int TemporalConvolutionTBC_(updateOutput)(THTensor *output,
                                           THTensor *input,
                                           THTensor *weight,
                                           THTensor *bias) {
-  long ilen = THTensor_(size)(input, 0);
-  long batchSize = THTensor_(size)(input, 1);
-  long inputPlanes = THTensor_(size)(input, 2);
-  long outputPlanes = THTensor_(size)(output, 2);
-  long olen = THTensor_(size)(output, 0);
-  long kw = THTensor_(size)(weight, 0);
+  auto ilen = THTensor_(size)(input, 0);
+  auto batchSize = THTensor_(size)(input, 1);
+  auto inputPlanes = THTensor_(size)(input, 2);
+  auto outputPlanes = THTensor_(size)(output, 2);
+  auto olen = THTensor_(size)(output, 0);
+  auto kw = THTensor_(size)(weight, 0);
   int pad = (olen - ilen + kw - 1) / 2;
 
   THArgCheck(
@@ -80,17 +80,17 @@ int TemporalConvolutionTBC_(updateOutput)(THTensor *output,
 int TemporalConvolutionTBC_(updateGradInput)(THTensor *dOutput,
                                              THTensor *dInput,
                                              THTensor *weight) {
-  long ilen = THTensor_(size)(dInput, 0);
-  long batchSize = THTensor_(size)(dInput, 1);
-  long inputPlanes = THTensor_(size)(dInput, 2);
-  long outputPlanes = THTensor_(size)(dOutput, 2);
-  long olen = THTensor_(size)(dOutput, 0);
-  long kw = THTensor_(size)(weight, 0);
+  auto ilen = THTensor_(size)(dInput, 0);
+  auto batchSize = THTensor_(size)(dInput, 1);
+  auto inputPlanes = THTensor_(size)(dInput, 2);
+  auto outputPlanes = THTensor_(size)(dOutput, 2);
+  auto olen = THTensor_(size)(dOutput, 0);
+  auto kw = THTensor_(size)(weight, 0);
   int pad = (olen - ilen + kw - 1) / 2;
 
-  real *W = THTensor_(data)(weight);
-  real *dI = THTensor_(data)(dInput);
-  real *dO = THTensor_(data)(dOutput);
+  auto W = THTensor_(data)(weight);
+  auto dI = THTensor_(data)(dInput);
+  auto dO = THTensor_(data)(dOutput);
 
   for (int k = 0; k < kw; k++) {
     int iShift = std::max(0, k - pad);
@@ -126,18 +126,18 @@ int TemporalConvolutionTBC_(accGradParameters)(THTensor *input,
                                                THTensor *dWeight,
                                                THTensor *dBias,
                                                accreal scale) {
-  long ilen = THTensor_(size)(input, 0);
-  long batchSize = THTensor_(size)(input, 1);
-  long inputPlanes = THTensor_(size)(input, 2);
-  long outputPlanes = THTensor_(size)(dOutput, 2);
-  long olen = THTensor_(size)(dOutput, 0);
-  long kw = THTensor_(size)(dWeight, 0);
+  auto ilen = THTensor_(size)(input, 0);
+  auto batchSize = THTensor_(size)(input, 1);
+  auto inputPlanes = THTensor_(size)(input, 2);
+  auto outputPlanes = THTensor_(size)(dOutput, 2);
+  auto olen = THTensor_(size)(dOutput, 0);
+  auto kw = THTensor_(size)(dWeight, 0);
   int pad = (olen - ilen + kw - 1) / 2;
 
-  real *dW = THTensor_(data)(dWeight);
-  real *dB = THTensor_(data)(dBias);
-  real *I = THTensor_(data)(input);
-  real *dO = THTensor_(data)(dOutput);
+  auto dW = THTensor_(data)(dWeight);
+  auto dB = THTensor_(data)(dBias);
+  auto I = THTensor_(data)(input);
+  auto dO = THTensor_(data)(dOutput);
 
   for (int t = 0; t < olen; t++)
     for (int b = 0; b < batchSize; b++)
