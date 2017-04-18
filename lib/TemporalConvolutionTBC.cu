@@ -222,3 +222,6 @@ void runTemporalConvolutionTBC_accGradParameters(
    }
 }
 } // namespaces
+
+#include "generic/TemporalConvolutionTBCHost.cu"
+#include "THCGenerateFloatType.h"

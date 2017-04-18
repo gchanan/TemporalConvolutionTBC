@@ -35,10 +35,11 @@ IF(WITH_CUDA)
    SET (CUDA_VERBOSE_BUILD ON)
    SET (CUDA_PROPAGATE_HOST_FLAGS ON)
    INCLUDE_DIRECTORIES(${Torch_INSTALL_INCLUDE}/THC)
-   set(SRC ${SRC} init_cuda.cpp TemporalConvolutionTBC.cu)
+   set(SRC ${SRC} init_cuda.cu)
 endif()
 
 if(WITH_CUDA)
+  CUDA_INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
   CUDA_ADD_LIBRARY(THTBC MODULE ${SRC} OPTIONS -std c++11) # module for mac os x support
 else()
   ADD_LIBRARY(THTBC MODULE ${SRC}) # module for mac os x support
