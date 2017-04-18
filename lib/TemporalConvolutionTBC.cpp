@@ -10,6 +10,7 @@
 #define TH_GENERIC_FILE "TemporalConvolutionTBC.cpp"
 #else
 
+namespace {
 extern "C" {
 
 int TemporalConvolutionTBC_(updateOutput)(THTensor *output,
@@ -172,6 +173,7 @@ int TemporalConvolutionTBC_(accGradParameters)(THTensor *input,
   return 0;
 }
 
+}
 }
 
 #endif
