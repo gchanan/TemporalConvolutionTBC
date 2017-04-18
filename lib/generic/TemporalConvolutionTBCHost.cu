@@ -1,7 +1,7 @@
 // Copyright 2016 Facebook
 
 #ifndef THC_GENERIC_FILE
-#define THC_GENERIC_FILE "generic/TemporalConvolutionTBCHost.cpp"
+#define THC_GENERIC_FILE "generic/TemporalConvolutionTBCHost.cu"
 #else
 
 using namespace std;

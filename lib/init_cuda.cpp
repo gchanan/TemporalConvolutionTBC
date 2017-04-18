@@ -11,7 +11,7 @@
 #define TemporalConvolutionTBC_CONCAT(x,y,z) TemporalConvolutionTBC_CONCAT_EXPAND(x,y,z)
 #define TemporalConvolutionTBC_(NAME) TemporalConvolutionTBC_CONCAT(TemporalConvolutionTBC_, NAME, CReal)
 
-#include "generic/TemporalConvolutionTBCHost.cpp"
+#include "generic/TemporalConvolutionTBCHost.cu"
 #include "THCGenerateFloatType.h"
 
 //#include "TemporalConvolutionTBCHost.cpp"
