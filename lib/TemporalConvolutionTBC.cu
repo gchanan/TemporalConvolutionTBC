@@ -17,36 +17,40 @@
 namespace detail {
 
 // kernels for forwarding and backwarding bias
+template <typename T>
 __global__ void TemporalConvolutionTBC_fp_bias(
-    float* output_features,
-    float* bias,
+    T* output_features,
+    T* bias,
     int output_stride,
     int rows) {
   int x = blockIdx.x * 32 + threadIdx.x;
-  float b = bias[x];
+  T b = bias[x];
   for (int row = blockIdx.y; row < rows; row += gridDim.y) {
     output_features[row * output_stride + x] = b;
   }
 }
+
+template <typename T, typename AccT>
 __global__ void TemporalConvolutionTBC_bp_bias(
-    float* matrix,
-    float* target,
+    T* matrix,
+    T* target,
     int rows,
     int stride,
-    float scale) {
+    AccT scale) {
   int i = blockIdx.x * 32 + threadIdx.x;
-  float t = 0;
+  AccT t = 0;
   for (int j = blockIdx.y; j < rows; j += gridDim.y)
     t += matrix[j * stride + i];
   atomicAdd(&target[i], t * scale);
 }
 
+template <typename T>
 void runTemporalConvolutionTBC_updateOutput(
     THCState* state,
-    const THCDeviceTensor<float, 3>& input,
-    const THCDeviceTensor<float, 3>& output,
-    const THCDeviceTensor<float, 3>& weight,
-    const THCDeviceTensor<float, 1>& bias) {
+    const THCDeviceTensor<T, 3>& input,
+    const THCDeviceTensor<T, 3>& output,
+    const THCDeviceTensor<T, 3>& weight,
+    const THCDeviceTensor<T, 1>& bias) {
 
   auto W = weight.data();
   auto B = bias.data();
@@ -110,11 +114,12 @@ void runTemporalConvolutionTBC_updateOutput(
   }
 }
 
+template <typename T>
 void runTemporalConvolutionTBC_updateGradInput(
     THCState* state,
-    const THCDeviceTensor<float, 3>& dInput,
-    const THCDeviceTensor<float, 3>& dOutput,
-    const THCDeviceTensor<float, 3>& weight) {
+    const THCDeviceTensor<T, 3>& dInput,
+    const THCDeviceTensor<T, 3>& dOutput,
+    const THCDeviceTensor<T, 3>& weight) {
   auto ilen = dInput.getSize(0);
   auto batchSize = dInput.getSize(1);
   auto inputPlanes = dInput.getSize(2);
@@ -156,13 +161,14 @@ void runTemporalConvolutionTBC_updateGradInput(
   }
 }
 
+template <typename T, typename AccT>
 void runTemporalConvolutionTBC_accGradParameters(
     THCState* state,
-    const THCDeviceTensor<float, 3>& input,
-    const THCDeviceTensor<float, 3>& dOutput,
-    const THCDeviceTensor<float, 3>& dWeight,
-    const THCDeviceTensor<float, 1>& dBias,
-    float scale) {
+    const THCDeviceTensor<T, 3>& input,
+    const THCDeviceTensor<T, 3>& dOutput,
+    const THCDeviceTensor<T, 3>& dWeight,
+    const THCDeviceTensor<T, 1>& dBias,
+    AccT scale) {
   auto ilen = input.getSize(0);
   auto batchSize = input.getSize(1);
   auto inputPlanes = input.getSize(2);
