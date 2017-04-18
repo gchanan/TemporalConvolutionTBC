@@ -28,11 +28,14 @@ local function_names = {"updateOutput", "updateGradInput", "accGradParameters"}
 tbc.kernels = {}
 tbc.kernels['torch.FloatTensor'] = tbc.bind(tbc.C, function_names, 'Float')
 tbc.kernels['torch.DoubleTensor'] = tbc.bind(tbc.C, function_names, 'Double')
-tbc.kernels['torch.CudaTensor'] = tbc.bind(tbc.C, function_names, 'Cuda', cutorch.getState())
 
 torch.getmetatable('torch.FloatTensor').TBC = tbc.kernels['torch.FloatTensor']
 torch.getmetatable('torch.DoubleTensor').TBC = tbc.kernels['torch.DoubleTensor']
-torch.getmetatable('torch.CudaTensor').TBC = tbc.kernels['torch.CudaTensor']
+
+if tbc.C.torchtbc_has_cuda() == 1 then
+  tbc.kernels['torch.CudaTensor'] = tbc.bind(tbc.C, function_names, 'Cuda', cutorch.getState())
+  torch.getmetatable('torch.CudaTensor').TBC = tbc.kernels['torch.CudaTensor']
+end
 
 require('tbc.TemporalConvolutionTBC')
 

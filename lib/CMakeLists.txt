@@ -29,6 +29,7 @@ IF(CUDA_FOUND)
 ENDIF()
 
 IF(WITH_CUDA)
+   ADD_DEFINITIONS(-DTORCH_TBC_CUDA)
    INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/cmake/select_compute_arch.cmake)
    CUDA_SELECT_NVCC_ARCH_FLAGS(NVCC_FLAGS_EXTRA)
    SET (CUDA_VERBOSE_BUILD ON)
@@ -38,9 +39,9 @@ IF(WITH_CUDA)
 endif()
 
 if(WITH_CUDA)
-  cuda_add_library(THTBC MODULE ${SRC} OPTIONS -std c++11) # module for mac os x support
+  CUDA_ADD_LIBRARY(THTBC MODULE ${SRC} OPTIONS -std c++11) # module for mac os x support
 else()
-  add_library(THTBC MODULE ${SRC}) # module for mac os x support
+  ADD_LIBRARY(THTBC MODULE ${SRC}) # module for mac os x support
 endif()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})

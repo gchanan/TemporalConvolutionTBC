@@ -7,6 +7,7 @@ ffi.cdef[[
   int TemporalConvolutionTBC_updateOutput_Double(THDoubleTensor *output,THDoubleTensor *input,THDoubleTensor *weight,THDoubleTensor *bias);
   int TemporalConvolutionTBC_updateGradInput_Double(THDoubleTensor *dOutput, THDoubleTensor *dInput, THDoubleTensor *weight);
   int TemporalConvolutionTBC_accGradParameters_Double(THDoubleTensor *input, THDoubleTensor *dOutput, THDoubleTensor *dWeight, THDoubleTensor *dBias, double scale);
+  int torchtbc_has_cuda();
 ]]
 
 local cudaAvailable, _ = pcall(require, 'cutorch')
