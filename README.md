@@ -1,6 +1,6 @@
 # TemporalConvolutionTBC
 
-## To build
+## Build
 ```
 luarocks make rocks/tbc-scm-1.rockspec
 ```
