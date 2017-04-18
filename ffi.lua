@@ -9,4 +9,4 @@ int TemporalConvolutionTBC_updateGradInput_Double(THDoubleTensor *dOutput, THDou
 int TemporalConvolutionTBC_accGradParameters_Double(THDoubleTensor *input, THDoubleTensor *dOutput, THDoubleTensor *dWeight, THDoubleTensor *dBias, double scale);
 ]]
 
-return ffi.load(package.searchpath('libtbc', package.cpath))
+return ffi.load(package.searchpath('libTHTBC', package.cpath))

@@ -19,6 +19,8 @@ endif()
 
 FIND_PACKAGE(Torch REQUIRED)
 
+ADD_SUBDIRECTORY(lib)
+
 FILE(GLOB luasrc *.lua)
-SET(src "init.cpp")
-ADD_TORCH_PACKAGE(tbc "${src}" "${luasrc}" "Temporal Convolution TBC")
+SET(PACKAGE tbc)
+INSTALL(FILES ${luasrc} DESTINATION ${Torch_INSTALL_LUA_PATH_SUBDIR}/${PACKAGE})
