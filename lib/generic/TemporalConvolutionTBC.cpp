@@ -7,7 +7,7 @@
 // Weight: kw * inputPlanes * outputPlanes
 
 #ifndef TH_GENERIC_FILE
-#define TH_GENERIC_FILE "TemporalConvolutionTBC.cpp"
+#define TH_GENERIC_FILE "generic/TemporalConvolutionTBC.cpp"
 #else
 
 namespace {

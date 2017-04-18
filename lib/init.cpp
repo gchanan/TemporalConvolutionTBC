@@ -17,5 +17,5 @@ int torchtbc_has_cuda() {
 }
 }
 
-#include "TemporalConvolutionTBC.cpp"
+#include "generic/TemporalConvolutionTBC.cpp"
 #include "THGenerateFloatTypes.h"
