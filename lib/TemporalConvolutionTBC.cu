@@ -11,10 +11,66 @@
 #include "THCDeviceTensorUtils.cuh"
 #include "THCDeviceUtils.cuh"
 #include "THCBlas.h"
+#include "THCNumerics.cuh"
+#include "THCAtomics.cuh"
 #include <algorithm>
 #include <cuda_runtime.h>
 
 namespace detail {
+
+template <typename T>
+void Xgemm(THCState *state,
+                      char transa,
+                      char transb,
+                      long m,
+                      long n,
+                      long k,
+                      T alpha,
+                      T *a,
+                      long lda,
+                      T *b,
+                      long ldb,
+                      T beta,
+                      T *c,
+                      long ldc);
+
+template<>
+void Xgemm<float>(THCState *state,
+                  char transa,
+                  char transb,
+                  long m,
+                  long n,
+                  long k,
+                  float alpha,
+                  float *a,
+                  long lda,
+                  float *b,
+                  long ldb,
+                  float beta,
+                  float *c,
+                  long ldc) {
+  THCudaBlas_Sgemm(state, transa, transb, m, n, k, alpha,
+                   a, lda, b, ldb, beta, c, ldc);
+}
+
+template<>
+void Xgemm<double>(THCState *state,
+                  char transa,
+                  char transb,
+                  long m,
+                  long n,
+                  long k,
+                  double alpha,
+                  double *a,
+                  long lda,
+                  double *b,
+                  long ldb,
+                  double beta,
+                  double *c,
+                  long ldc) {
+  THCudaBlas_Dgemm(state, transa, transb, m, n, k, alpha,
+                   a, lda, b, ldb, beta, c, ldc);
+}
 
 // kernels for forwarding and backwarding bias
 template <typename T>
@@ -95,7 +151,7 @@ void runTemporalConvolutionTBC_updateOutput(
     // weight   is m*r (row-major)
     // output   is l*r (row-major)
     if (t > 0)
-       THCudaBlas_Sgemm(
+       Xgemm<T>(
           state,
           'n',
           'n',
@@ -142,7 +198,7 @@ void runTemporalConvolutionTBC_updateGradInput(
     // weight  is r*m (row-major)
     // dInput  is l*r (row-major)
     if (t > 0)
-      THCudaBlas_Sgemm(
+      Xgemm<T>(
           state,
           't',
           'n',
@@ -157,7 +213,7 @@ void runTemporalConvolutionTBC_updateGradInput(
           1, // beta
           dI + iShift * dInput.getStride(0),
           dInput.getStride(1) // m
-          );
+        );
   }
 }
 
@@ -214,7 +270,7 @@ void runTemporalConvolutionTBC_accGradParameters(
     // dOutput  is m*r (row-major)
     // dWeight  is l*r (row-major)
     if (t > 0)
-      THCudaBlas_Sgemm(
+      Xgemm<T>(
           state,
           'n',
           't',
@@ -229,10 +285,13 @@ void runTemporalConvolutionTBC_accGradParameters(
           1, // beta
           dW + k * dWeight.getStride(0),
           outputPlanes // r
-          );
+        );
    }
 }
 } // namespaces
 
 #include "generic/TemporalConvolutionTBCHost.cu"
 #include "THCGenerateFloatType.h"
+
+#include "generic/TemporalConvolutionTBCHost.cu"
+#include "THCGenerateDoubleType.h"

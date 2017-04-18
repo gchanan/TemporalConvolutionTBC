@@ -16,6 +16,9 @@ if cudaAvailable then
     int TemporalConvolutionTBC_updateOutput_Cuda(THCState *state, THCudaTensor *output,THCudaTensor *input,THCudaTensor *weight,THCudaTensor *bias);
     int TemporalConvolutionTBC_updateGradInput_Cuda(THCState *state, THCudaTensor *dOutput, THCudaTensor *dInput, THCudaTensor *weight);
     int TemporalConvolutionTBC_accGradParameters_Cuda(THCState *state, THCudaTensor *input, THCudaTensor *dOutput, THCudaTensor *dWeight, THCudaTensor *dBias, float scale);
+    int TemporalConvolutionTBC_updateOutput_CudaDouble(THCState *state, THCudaDoubleTensor *output,THCudaDoubleTensor *input, THCudaDoubleTensor *weight,THCudaDoubleTensor *bias);
+    int TemporalConvolutionTBC_updateGradInput_CudaDouble(THCState *state, THCudaDoubleTensor *dOutput, THCudaDoubleTensor *dInput, THCudaDoubleTensor *weight);
+    int TemporalConvolutionTBC_accGradParameters_CudaDouble(THCState *state, THCudaDoubleTensor *input, THCudaDoubleTensor *dOutput, THCudaDoubleTensor *dWeight, THCudaDoubleTensor *dBias, double scale);
   ]]
 end
 

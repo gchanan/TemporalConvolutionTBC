@@ -3,7 +3,3 @@
 #define TemporalConvolutionTBC_(NAME) TemporalConvolutionTBC_CONCAT(TemporalConvolutionTBC_, NAME, CReal)
 
 #include "TemporalConvolutionTBC.cu"
-//#include "THCGenerateFloatType.h"
-
-//#include "TemporalConvolutionTBCHost.cpp"
-//#include "THCGenerateDoubleType.h"
