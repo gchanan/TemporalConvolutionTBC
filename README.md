@@ -26,3 +26,13 @@ delta	2.3127072466641e-15
 delta	1.1667500212561e-15
 delta	4.9230179827439e-16
 ```
+
+torch.CudaTensor:
+```
+th> require 'tbc'
+th> nn.TemporalConvolutionTBC.test().checkforwardbackward(nil, nil, nil, nil, nil, nil, 'torch.CudaTensor')
+delta	7.5263126531217e-07
+delta	9.1754044370814e-07
+delta	7.4550386618305e-07
+delta	6.8602038801142e-07
+```

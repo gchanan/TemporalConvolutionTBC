@@ -1,6 +1,38 @@
 set(SRC init.cpp)
 
-add_library(THTBC MODULE ${SRC}) # module for mac os x support
+FIND_PACKAGE(CUDA)
+
+IF(CUDA_FOUND)
+  MESSAGE(STATUS "CUDA Found")
+  INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
+  INCLUDE(CheckLibraryExists)
+  FIND_LIBRARY(THC NAMES libTHC.so "" WITH_CUDA)
+  IF(THC)
+    SET(WITH_CUDA 1)
+  ENDIF()
+  IF(NOT WITH_CUDA)
+    MESSAGE(WARNING "CUDA found, but THC library not found -- disabling CUDA support")
+  ELSE()
+    SET(CMAKE_REQUIRED_INCLUDES ${CUDA_INCLUDE_DIRS})
+    INCLUDE(CheckIncludeFile)
+  ENDIF()
+ENDIF()
+
+IF(WITH_CUDA)
+   INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/cmake/select_compute_arch.cmake)
+   CUDA_SELECT_NVCC_ARCH_FLAGS(NVCC_FLAGS_EXTRA)
+   SET (CUDA_VERBOSE_BUILD ON)
+   SET (CUDA_PROPAGATE_HOST_FLAGS ON)
+   INCLUDE_DIRECTORIES(${Torch_INSTALL_INCLUDE}/THC)
+   set(SRC ${SRC} init_cuda.cpp TemporalConvolutionTBC.cu)
+endif()
+
+if(WITH_CUDA)
+  cuda_add_library(THTBC MODULE ${SRC} OPTIONS -std c++11) # module for mac os x support
+else()
+  add_library(THTBC MODULE ${SRC}) # module for mac os x support
+endif()
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 SET_TARGET_PROPERTIES(THTBC PROPERTIES
       PREFIX "lib"
