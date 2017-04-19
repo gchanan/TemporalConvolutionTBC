@@ -72,6 +72,27 @@ void Xgemm<double>(THCState *state,
                    a, lda, b, ldb, beta, c, ldc);
 }
 
+#ifdef CUDA_HALF_TENSOR
+template<>
+void Xgemm<half>(THCState *state,
+                  char transa,
+                  char transb,
+                  long m,
+                  long n,
+                  long k,
+                  half alpha,
+                  half *a,
+                  long lda,
+                  half *b,
+                  long ldb,
+                  half beta,
+                  half *c,
+                  long ldc) {
+  THCudaBlas_Hgemm(state, transa, transb, m, n, k, alpha,
+                   a, lda, b, ldb, beta, c, ldc);
+}
+#endif
+
 // kernels for forwarding and backwarding bias
 template <typename T>
 __global__ void TemporalConvolutionTBC_fp_bias(
@@ -96,11 +117,11 @@ __global__ void TemporalConvolutionTBC_bp_bias(
   int i = blockIdx.x * 32 + threadIdx.x;
   AccT t = 0;
   for (int j = blockIdx.y; j < rows; j += gridDim.y)
-    t += matrix[j * stride + i];
-  atomicAdd(&target[i], t * scale);
+    t += ScalarConvert<T, AccT>::to(matrix[j * stride + i]);
+  atomicAdd(&target[i], ScalarConvert<AccT, T>::to(t * scale));
 }
 
-template <typename T>
+template <typename T, typename AccT>
 void runTemporalConvolutionTBC_updateOutput(
     THCState* state,
     const THCDeviceTensor<T, 3>& input,
@@ -158,19 +179,19 @@ void runTemporalConvolutionTBC_updateOutput(
           outputPlanes, // r
           batchSize * t, // l
           inputPlanes, // m
-          1, // alpha
+          ScalarConvert<int, T>::to(1), // alpha
           W + k * weight.getStride(0),
           outputPlanes, // r
           I + iShift * input.getStride(0),
           input.getStride(1), // >=m
-          1, // beta
+          ScalarConvert<int, T>::to(1), // beta
           O + oShift * output.getStride(0),
           output.getStride(1) // r
         );
   }
 }
 
-template <typename T>
+template <typename T, typename AccT>
 void runTemporalConvolutionTBC_updateGradInput(
     THCState* state,
     const THCDeviceTensor<T, 3>& dInput,
@@ -205,12 +226,12 @@ void runTemporalConvolutionTBC_updateGradInput(
           inputPlanes, // r
           batchSize * t, // l
           outputPlanes, // m
-          1, // alpha
+          ScalarConvert<int, T>::to(1), // alpha
           W + k * weight.getStride(0),
           outputPlanes, // m
           dO + oShift * dOutput.getStride(0),
           dOutput.getStride(1), // m
-          1, // beta
+          ScalarConvert<int, T>::to(1), // beta
           dI + iShift * dInput.getStride(0),
           dInput.getStride(1) // m
         );
@@ -277,12 +298,12 @@ void runTemporalConvolutionTBC_accGradParameters(
           outputPlanes, // r
           inputPlanes, // l
           batchSize * t, // m
-          scale, // alpha
+          ScalarConvert<AccT, T>::to(scale), // alpha
           dO + oShift * dOutput.getStride(0),
           dOutput.getStride(1), // r
           I + iShift * input.getStride(0),
           input.getStride(1), // l
-          1, // beta
+          ScalarConvert<int, T>::to(1), // beta
           dW + k * dWeight.getStride(0),
           outputPlanes // r
         );
@@ -291,7 +312,4 @@ void runTemporalConvolutionTBC_accGradParameters(
 } // namespaces
 
 #include "generic/TemporalConvolutionTBCHost.cu"
-#include "THCGenerateFloatType.h"
-
-#include "generic/TemporalConvolutionTBCHost.cu"
-#include "THCGenerateDoubleType.h"
+#include "THCGenerateFloatTypes.h"

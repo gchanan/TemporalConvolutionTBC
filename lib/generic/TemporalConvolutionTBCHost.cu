@@ -22,7 +22,7 @@ int TemporalConvolutionTBC_(updateOutput)(THCState *state,
   auto weightDev = toDeviceTensor<real, 3>(state, weight);
   auto biasDev = toDeviceTensor<real, 1>(state, bias);
 
-  detail::runTemporalConvolutionTBC_updateOutput<real>(
+  detail::runTemporalConvolutionTBC_updateOutput<real, accreal>(
       state, inputDev, outputDev, weightDev, biasDev);
 
   return 0;
@@ -38,7 +38,7 @@ int TemporalConvolutionTBC_(updateGradInput)(THCState *state,
   auto dOutputDev = toDeviceTensor<real, 3>(state, dOutput);
   auto weightDev = toDeviceTensor<real, 3>(state, weight);
 
-  detail::runTemporalConvolutionTBC_updateGradInput<real>(
+  detail::runTemporalConvolutionTBC_updateGradInput<real, accreal>(
       state, dInputDev, dOutputDev, weightDev);
 
   return 0;

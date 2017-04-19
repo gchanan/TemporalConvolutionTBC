@@ -37,6 +37,10 @@ if tbc.C.torchtbc_has_cuda() == 1 then
   tbc.kernels['torch.CudaDoubleTensor'] = tbc.bind(tbc.C, function_names, 'CudaDouble', cutorch.getState())
   torch.getmetatable('torch.CudaTensor').TBC = tbc.kernels['torch.CudaTensor']
   torch.getmetatable('torch.CudaDoubleTensor').TBC = tbc.kernels['torch.CudaDoubleTensor']
+  if cutorch.hasHalf then
+    tbc.kernels['torch.CudaHalfTensor'] = tbc.bind(tbc.C, function_names, 'CudaHalf', cutorch.getState())
+    torch.getmetatable('torch.CudaHalfTensor').TBC = tbc.kernels['torch.CudaHalfTensor']
+  end
 end
 
 require('tbc.TemporalConvolutionTBC')

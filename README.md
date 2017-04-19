@@ -45,3 +45,15 @@ delta	1.9863067950491e-15
 delta	2.7305562685917e-15
 delta	1.1856084446228e-15
 ```
+
+torch.CudaHalfTensor:
+```
+th> require 'tbc'
+th> cutorch.hasHalf
+true
+th> nn.TemporalConvolutionTBC.test().checkforwardbackward(nil, nil, nil, nil, nil, nil, 'torch.CudaHalfTensor')
+delta	0.00070224719101124
+delta	0.0081447963800905
+delta	0.0060040026684456
+delta	0.00071225071225071
+```
