@@ -79,7 +79,7 @@ function TBC:test()
     nIn = nIn or 512
     nOut = nOut or 512
     kw = kw or 3
-    local epsilon = (type == 'torch.Tensor' or type == 'torch.CudaTensor') and 1e-14
+    local epsilon = (type == 'torch.DoubleTensor' or type == 'torch.CudaDoubleTensor') and 1e-14
         or (type == 'torch.CudaHalfTensor') and 5e-2 or 1e-5
     -- random input
     local input = torch.randn(bsz, l, nIn):type(type)
