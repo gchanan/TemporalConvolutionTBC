@@ -40,7 +40,11 @@ endif()
 
 if(WITH_CUDA)
   CUDA_INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-  CUDA_ADD_LIBRARY(THTBC MODULE ${SRC} OPTIONS -std c++11) # module for mac os x support
+  if(CMAKE_VERSION VERSION_LESS "3.1")
+    CUDA_ADD_LIBRARY(THTBC MODULE ${SRC} OPTIONS) # module for mac os x suppor
+  else()
+    CUDA_ADD_LIBRARY(THTBC MODULE ${SRC} OPTIONS -std c++11) # module for mac os x support
+  endif()
 else()
   ADD_LIBRARY(THTBC MODULE ${SRC}) # module for mac os x support
 endif()
